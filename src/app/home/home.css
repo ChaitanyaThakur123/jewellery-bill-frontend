@@ -1,0 +1,57 @@
+.bg {
+background-image: url('../../assets/jewellery-bg.jpg');
+
+background-size: cover;
+background-position: center;
+width: 100%;
+height: 100vh;
+}
+.overlay {
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.45);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+color: white;
+}
+.title {
+font-size: 42px;
+font-weight: bold;
+margin-bottom: 40px;
+}
+.btn-container {
+display: flex;
+gap: 40px;
+}
+.bill-btn {
+padding: 18px 40px;
+font-size: 24px;
+font-weight: bold;
+border-radius: 12px;
+border: none;
+cursor: pointer;
+transition: 0.3s;
+}
+.gold { background: #ffcc00; color: black; }
+.silver { background: #c0c0c0; color: black; }
+.bill-btn:hover { transform: scale(1.05); }
+
+@media (max-width: 768px) {
+
+  .title {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .btn-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .bill-btn {
+    width: 220px;
+    font-size: 20px;
+  }
+}

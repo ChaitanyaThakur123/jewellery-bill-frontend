@@ -3,10 +3,9 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']   // ← FIXED (urls)
 })
-export class App {
-  protected title = 'jewellery-bill';
-}
+export class App {}

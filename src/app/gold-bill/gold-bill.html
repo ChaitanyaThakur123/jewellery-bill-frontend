@@ -1,0 +1,79 @@
+<div class="bill-container">
+  <div class="bill-title">Gold Bill</div>
+  <!-- Customer Info Section -->
+  <div class="customer-section">
+    <div class="left">
+      <div class="field">
+        <label>Customer Name:</label>
+        <input type="text" [(ngModel)]="customer.name" />
+      </div>
+      <div class="field">
+        <label>Address:</label>
+        <input type="text" [(ngModel)]="customer.address" />
+      </div>
+      <div class="field">
+        <label>Mobile No:</label>
+        <input type="text" [(ngModel)]="customer.mobile" />
+      </div>
+    </div>
+    <div class="right">
+      <div class="field">
+        <label>Date:</label> <input type="date" [(ngModel)]="customer.date" />
+      </div>
+    </div>
+  </div>
+  <div class="bill-actions">
+    <button class="add-btn" (click)="addRow()">+ Add Item</button>
+    <button class="print-btn" (click)="printBill()">🖨 Print</button>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Sr</th>
+          <th>Item ID</th>
+          <th>Description</th>
+          <th>Weight</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Making (12%)</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of rows; let i = index">
+          <td>{{ i+1 }}</td>
+          <td>
+            <select [(ngModel)]="r.itemId" (change)="onItemIdChange(r)">
+              <option value="">Select Item</option>
+              <option *ngFor="let i of items" [value]="i.id">{{ i.id }}</option>
+            </select>
+          </td>
+          <td>{{ r.description }}</td>
+          <td>
+            <input
+              type="number"
+              [(ngModel)]="r.weight"
+              (input)="recalculate(r)"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              [(ngModel)]="r.rate"
+              (change)="onRateChange(r)"
+            />
+          </td>
+          <td>{{ r.amount | number:'1.2-2' }}</td>
+          <td>{{ r.making | number:'1.2-2' }}</td>
+          <td>{{ r.total | number:'1.2-2' }}</td>
+          <td>
+            <button class="remove-btn" (click)="removeRow(r.uid)">x</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="subtotal">Subtotal: ₹ {{ subTotal | number:'1.2-2' }}</div>
+</div>
