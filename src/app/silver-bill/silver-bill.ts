@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Jewellery, ItemDTO } from '../services/jewellery';
+import { JewelleryService, ItemDTO } from '../services/jewellery';
 
 interface SilverRow {
   uid: string;
@@ -10,7 +10,7 @@ interface SilverRow {
   weight: number | null;
   rate: number | null;
   amount: number;
-  making: number;   // manually entered
+  making: number;   // manual
   total: number;
 }
 
@@ -22,10 +22,11 @@ interface SilverRow {
   styleUrls: ['./silver-bill.css']
 })
 export class SilverBillComponent implements OnInit {
+
   items: ItemDTO[] = [];
   rows: SilverRow[] = [];
 
-  constructor(private svc: Jewellery) {}
+  constructor(private svc: JewelleryService) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -33,51 +34,67 @@ export class SilverBillComponent implements OnInit {
   }
 
   loadItems() {
-    this.svc.getItems().subscribe(res => this.items = res);
+    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res);
   }
 
-  uid() { return Math.random().toString(36).substring(2,9); }
+  uid(): string {
+    return Math.random().toString(36).substring(2, 9);
+  }
 
+  // Customer Inputs
   customer = {
-  name: '',
-  address: '',
-  mobile: '',
-  date: new Date().toISOString().substring(0, 10)
-};
-
+    name: '',
+    address: '',
+    mobile: '',
+    date: new Date().toISOString().substring(0, 10),
+  };
 
   addRow() {
-    this.rows.push({ uid: this.uid(), itemId: '', description: '', weight: null, rate: null, amount: 0, making: 0, total: 0 });
+    this.rows.push({
+      uid: this.uid(),
+      itemId: '',
+      description: '',
+      weight: null,
+      rate: null,
+      amount: 0,
+      making: 0,
+      total: 0
+    });
   }
-
-  printBill() {
-  window.print();
-}
 
   removeRow(id: string) {
     this.rows = this.rows.filter(r => r.uid !== id);
   }
 
-  onItemIdChange(r: SilverRow) {
-    const f = this.items.find(i => i.id === r.itemId);
+  printBill() {
+    window.print();
+  }
+
+  // --------------------------------------------------------
+  onItemIdChange(row: SilverRow) {
+    const f = this.items.find(i => i.id === row.itemId);
     if (!f) return;
-    r.description = f.description;
-    r.weight = f.weight;
-    this.recalc(r);
+
+    row.description = f.description;
+    row.weight = f.weight;
+    this.recalc(row);
   }
 
-  onRateChange(r: SilverRow) {
-    this.recalc(r);
+  onRateChange(row: SilverRow) {
+    this.recalc(row);
   }
 
-  onMakingChange(r: SilverRow) {
-    this.recalc(r);
+  onMakingChange(row: SilverRow) {
+    this.recalc(row);
   }
 
-  recalc(r: SilverRow) {
-    if (r.rate != null && r.weight != null) {
-      r.amount = r.rate * r.weight;
-      r.total = r.amount + r.making;
+  recalc(row: SilverRow) {
+    if (row.rate != null && row.weight != null) {
+      row.amount = row.rate * row.weight;
+      row.total = row.amount + row.making;
+    } else {
+      row.amount = 0;
+      row.total = row.making;
     }
   }
 
@@ -85,5 +102,3 @@ export class SilverBillComponent implements OnInit {
     return this.rows.reduce((s, r) => s + r.total, 0);
   }
 }
-
-

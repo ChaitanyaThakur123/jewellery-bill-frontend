@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JewelleryService, ItemDTO } from '../services/jewellery';
 import { jsPDF } from 'jspdf';
-import * as html2canvas from 'html2canvas';
-import { HttpClient } from '@angular/common/http';   // ✅ ADDED
+import html2canvas from 'html2canvas';
 
 interface GoldRow {
   uid: string;
@@ -28,29 +27,26 @@ export class GoldBillComponent implements OnInit {
 
   items: ItemDTO[] = [];
   rows: GoldRow[] = [];
-
   dailyGoldRate: number | null = null;
 
-  constructor(private svc: JewelleryService, private http: HttpClient) {}   // ✅ ADDED HttpClient
+  constructor(private svc: JewelleryService) {}
 
   ngOnInit(): void {
     this.loadItems();
     this.addRow();
-  
-    this.checkDailyRate();     // existing
+    this.checkDailyRate();
   }
 
- 
-
-  // =========================================
+  // -------------------------------------------------------
   loadItems() {
-    this.svc.getItems().subscribe(res => this.items = res);
+    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res);
   }
 
   uid(): string {
     return Math.random().toString(36).substring(2, 9);
   }
 
+  // Customer Inputs
   customer = {
     name: '',
     address: '',
@@ -58,6 +54,7 @@ export class GoldBillComponent implements OnInit {
     date: new Date().toISOString().substring(0, 10),
   };
 
+  // -------------------------------------------------------
   checkDailyRate() {
     const d = this.customer.date;
 
@@ -79,22 +76,18 @@ export class GoldBillComponent implements OnInit {
       itemId: '',
       description: '',
       weight: null,
-      rate: this.dailyGoldRate ?? 
-      null,  // ✅ use live if available
+      rate: this.dailyGoldRate ?? null,
       amount: 0,
       making: 0,
       total: 0
     });
   }
 
-  printBill() {
-    window.print();
-  }
-
   removeRow(id: string) {
     this.rows = this.rows.filter(r => r.uid !== id);
   }
 
+  // -------------------------------------------------------
   onItemIdChange(row: GoldRow) {
     const found = this.items.find(i => i.id === row.itemId);
     if (!found) return;
@@ -107,9 +100,9 @@ export class GoldBillComponent implements OnInit {
   onRateChange(r: GoldRow) {
     this.recalculate(r);
 
+    // If rate is entered first time → Save as daily rate
     if (!this.dailyGoldRate && r.rate && r.rate > 0) {
       this.dailyGoldRate = r.rate;
-
       this.svc.setDailyRate("gold", r.rate, this.customer.date).subscribe();
 
       this.rows.forEach(row => {
@@ -119,6 +112,7 @@ export class GoldBillComponent implements OnInit {
     }
   }
 
+  // -------------------------------------------------------
   recalculate(row: GoldRow) {
     if (row.rate != null && row.weight != null) {
       row.amount = row.rate * row.weight;
@@ -135,18 +129,22 @@ export class GoldBillComponent implements OnInit {
     return this.rows.reduce((total, r) => total + r.total, 0);
   }
 
+  // -------------------------------------------------------
+  printBill() {
+    window.print();
+  }
+
   async downloadPdf() {
     const element = document.getElementById('gold-bill');
     if (!element) return;
 
-    const canvas = await html2canvas.default(element);
-    const imgData = canvas.toDataURL('image/png');
+    const canvas = await html2canvas(element);
     const pdf = new jsPDF('p', 'mm', 'a4');
 
     const width = pdf.internal.pageSize.getWidth();
     const height = (canvas.height * width) / canvas.width;
 
-    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, width, height);
     pdf.save('gold-bill.pdf');
   }
 }
