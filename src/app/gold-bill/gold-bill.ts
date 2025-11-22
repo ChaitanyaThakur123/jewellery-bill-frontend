@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Jewellery, ItemDTO } from '../services/jewellery';
+import { JewelleryService, ItemDTO } from '../services/jewellery';
 import { jsPDF } from 'jspdf';
 import * as html2canvas from 'html2canvas';
 import { HttpClient } from '@angular/common/http';   // ✅ ADDED
@@ -31,7 +31,7 @@ export class GoldBillComponent implements OnInit {
 
   dailyGoldRate: number | null = null;
 
-  constructor(private svc: Jewellery, private http: HttpClient) {}   // ✅ ADDED HttpClient
+  constructor(private svc: JewelleryService, private http: HttpClient) {}   // ✅ ADDED HttpClient
 
   ngOnInit(): void {
     this.loadItems();

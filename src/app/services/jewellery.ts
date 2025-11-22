@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 
-
 export interface ItemDTO {
   id: string;
   description: string;
@@ -14,35 +13,33 @@ export interface ItemDTO {
 @Injectable({
   providedIn: 'root',
 })
-export class Jewellery {
+export class JewelleryService {
 
-  api = environment.api;   // ✅ Use ONLY this
+  api = environment.api;  // ONLY BACKEND URL
 
   constructor(private http: HttpClient) {}
 
-  // ============================================================
-  // ITEMS
-  // ============================================================
+  // GET ALL ITEMS
   getItems(): Observable<ItemDTO[]> {
     return this.http.get<ItemDTO[]>(`${this.api}/items`);
   }
 
-  addItem(item: ItemDTO) {
-    return this.http.post(`${this.api}/items`, item);
-  }
-
-  // ============================================================
-  // DAILY RATES
-  // ============================================================
+  // DAILY RATE
   getDailyRate(metal: string, date: string) {
-    return this.http.get<any>(`${this.api}/daily-rate/get-rate/${metal}/${date}`);
+    return this.http.get(`${this.api}/daily-rate/get-rate/${metal}/${date}`);
   }
 
   setDailyRate(metal: string, rate: number, date: string) {
-    return this.http.post<any>(`${this.api}/daily-rate/set-rate`, { metal, rate, date });
+    return this.http.post(`${this.api}/daily-rate/set-rate`, { metal, rate, date });
   }
 
+  // LATEST GOLD RATE
   getLatestGoldRate() {
     return this.http.get(`${this.api}/gold/latest`);
+  }
+
+  // ADD ITEM
+  addItem(item: ItemDTO) {
+    return this.http.post(`${this.api}/items`, item);
   }
 }
