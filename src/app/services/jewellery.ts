@@ -15,16 +15,20 @@ export interface ItemDTO {
 })
 export class JewelleryService {
 
-  api = environment.api;  // ONLY BACKEND URL
+  api = environment.api;   // ✔ Correct backend URL
 
   constructor(private http: HttpClient) {}
 
+  // ------------------------------------
   // GET ALL ITEMS
+  // ------------------------------------
   getItems(): Observable<ItemDTO[]> {
     return this.http.get<ItemDTO[]>(`${this.api}/items`);
   }
 
+  // ------------------------------------
   // DAILY RATE
+  // ------------------------------------
   getDailyRate(metal: string, date: string) {
     return this.http.get(`${this.api}/daily-rate/get-rate/${metal}/${date}`);
   }
@@ -33,12 +37,16 @@ export class JewelleryService {
     return this.http.post(`${this.api}/daily-rate/set-rate`, { metal, rate, date });
   }
 
-  // LATEST GOLD RATE
+  // ------------------------------------
+  // LATEST GOLD RATE (optional)
+  // ------------------------------------
   getLatestGoldRate() {
     return this.http.get(`${this.api}/gold/latest`);
   }
 
+  // ------------------------------------
   // ADD ITEM
+  // ------------------------------------
   addItem(item: ItemDTO) {
     return this.http.post(`${this.api}/items`, item);
   }

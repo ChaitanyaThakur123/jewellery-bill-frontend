@@ -1,5 +1,3 @@
-
-
 export const environment = {
-  api: "https://jewellery-backend.onrender.com/api"
+  api: "https://jewellery-bill-backend.onrender.com/api"
 };
