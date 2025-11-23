@@ -1,3 +1,4 @@
 export const environment = {
-  api: "https://jewellery-bill-backend.onrender.com/api"
+  production: false,
+  api: "http://localhost:5000/api"
 };

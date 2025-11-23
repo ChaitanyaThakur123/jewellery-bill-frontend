@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 
 interface GoldRow {
   uid: string;
-  itemId: string;
+  itemId: string;        // using Item.id (business id like G001)
   description: string;
   weight: number | null;
   rate: number | null;
@@ -39,7 +39,7 @@ export class GoldBillComponent implements OnInit {
 
   // -------------------------------------------------------
   loadItems() {
-    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res);
+    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res || []);
   }
 
   uid(): string {
@@ -58,14 +58,17 @@ export class GoldBillComponent implements OnInit {
   checkDailyRate() {
     const d = this.customer.date;
 
-    this.svc.getDailyRate("gold", d).subscribe((res: any) => {
-      if (res.found) {
-        this.dailyGoldRate = res.rate;
+    this.svc.getDailyRate("gold", d).subscribe((rate) => {
+      if (rate !== null) {
+        this.dailyGoldRate = rate;
 
         this.rows.forEach(r => {
           r.rate = this.dailyGoldRate!;
           this.recalculate(r);
         });
+      } else {
+        // no rate set for this date — leave null
+        this.dailyGoldRate = null;
       }
     });
   }
@@ -101,13 +104,20 @@ export class GoldBillComponent implements OnInit {
     this.recalculate(r);
 
     // If rate is entered first time → Save as daily rate
-    if (!this.dailyGoldRate && r.rate && r.rate > 0) {
+    if ((this.dailyGoldRate === null || this.dailyGoldRate === undefined) && r.rate && r.rate > 0) {
       this.dailyGoldRate = r.rate;
-      this.svc.setDailyRate("gold", r.rate, this.customer.date).subscribe();
-
-      this.rows.forEach(row => {
-        row.rate = r.rate!;
-        this.recalculate(row);
+      this.svc.setDailyRate("gold", r.rate, this.customer.date).subscribe({
+        next: () => {
+          // confirm saved, update rows
+          this.rows.forEach(row => {
+            row.rate = r.rate!;
+            this.recalculate(row);
+          });
+        },
+        error: () => {
+          // handle error silently or show toast
+          console.error('Failed to save daily rate');
+        }
       });
     }
   }

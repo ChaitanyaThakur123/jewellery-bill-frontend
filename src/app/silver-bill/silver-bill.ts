@@ -5,7 +5,7 @@ import { JewelleryService, ItemDTO } from '../services/jewellery';
 
 interface SilverRow {
   uid: string;
-  itemId: string;
+  itemId: string;    // using Item.id (G001 etc)
   description: string;
   weight: number | null;
   rate: number | null;
@@ -34,7 +34,7 @@ export class SilverBillComponent implements OnInit {
   }
 
   loadItems() {
-    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res);
+    this.svc.getItems().subscribe((res: ItemDTO[]) => this.items = res || []);
   }
 
   uid(): string {
